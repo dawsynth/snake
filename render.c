@@ -1,0 +1,67 @@
+#include "render.h"
+
+
+void gameInit(Game *game)
+{
+    // Attempt to initialize graphics and timer system
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0)
+    {
+        printf("Error initializing SDL: %s\n", SDL_GetError());
+        return;
+    }
+    game->window  = SDL_CreateWindow("Snake",
+                                     SDL_WINDOWPOS_CENTERED,
+                                     SDL_WINDOWPOS_CENTERED,
+                                     DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, 0);
+	if (!game->window)
+	{
+		printf("Error Creating Window: %s\n", SDL_GetError());
+		SDL_Quit();
+		return;
+	}
+
+    // Create renderer which sets up graphics hardware
+    Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+    game->renderer = SDL_CreateRenderer(game->window, -1, render_flags);
+    if (!game->renderer)
+    {
+        printf("Error Creating Renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(game->window);
+        SDL_Quit();
+        return;
+    }
+    game->time = 0;
+    game->w = DEFAULT_WINDOW_WIDTH;
+    game->h = DEFAULT_WINDOW_HEIGHT;
+    return;
+}
+
+
+void gameTerm(Game *game)
+{
+    SDL_DestroyRenderer(game->renderer);
+	SDL_DestroyWindow(game->window);
+	SDL_Quit();    
+}
+
+SDL_Texture *loadTexture(Game *game, const char *file)
+{
+    // Load image into memory using SDL_image
+    SDL_Surface* surface = IMG_Load(file);
+    if (!surface)
+    {
+        printf("Error Creating Surface: %s\n", SDL_GetError());
+        gameTerm(game);
+    }
+
+    // Load Image into Graphics Hardware
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!texture)
+    {
+        printf("Error Creating Texture: %s\n", SDL_GetError());
+        gameTerm(game);
+    }
+    return texture;
+}
+
