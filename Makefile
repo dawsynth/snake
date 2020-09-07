@@ -16,7 +16,7 @@ SRCS := main.c render.c player.c
 OBJS := $(SRCS:.c=.o)
 
 # name of executable
-EXEC := game
+EXEC := snake
 
 # default recipe
 all: $(EXEC)

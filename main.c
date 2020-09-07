@@ -80,17 +80,6 @@ int main(void)
                         default:
                             break;
                     }
-                    /* if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-                    {
-                        closeRequested = 1;
-                    }*/
-                    /* if (event.key.keysym.scancode == SDL_SCANCODE_1) gameResize(&game, &player, &apple, 100, 100);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_2) gameResize(&game, &player, &apple, 200, 200);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_3) gameResize(&game, &player, &apple, 300, 300);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_4) gameResize(&game, &player, &apple, 400, 400);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_5) gameResize(&game, &player, &apple, 500, 500);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_6) gameResize(&game, &player, &apple, 600, 600);
-                    if (event.key.keysym.scancode == SDL_SCANCODE_7) gameResize(&game, &player, &apple, 700, 700); */
                     break;
             }
         }
@@ -107,3 +96,4 @@ int main(void)
     gameTerm(&game);
 	return 0;
 }
+
