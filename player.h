@@ -7,22 +7,27 @@
 
 #define SPEED 1
 
+
+struct node{
+    SDL_Rect bodyPart;
+    struct node* next;
+    struct node* prev;
+};
+typedef struct node PlayerNode;
+
 typedef struct {
-    int hx, hy;
-    int direction;
-    int score, limit, level;
+    int direction, score, limit, level;
     unsigned long int headMoved;
-    SDL_Rect body[6000];
-} Player;
+} GameData;
 
 typedef struct {
     int x, y;
 } Apple;
 
-void playerInit(Game *game, Player *player, int x, int y);
+void playerInit(Game *game, PlayerNode *playerHead, GameData *gameData, int hx, int hy);
 void appleInit(Game *game, Apple *apple);
-void renderPlayer(Game *game, Player *player);
-void growPlayer(Game *game, Player *player);
-void renderApple(Game *game, Apple *apple, Player *player);
-void gameResize(Game *game, Player *player, Apple *apple, int w, int h);
+void renderPlayer(Game *game, PlayerNode *playerHead, GameData *gameData);
+void growPlayer(Game *game, PlayerNode *playerHead, GameData *gameData);
+void renderApple(Game *game, Apple *apple, PlayerNode *playerHead, GameData *gameData);
+void gameResize(Game *game, PlayerNode *playerHead, GameData *gameData, Apple *apple, int w, int h);
 #endif
