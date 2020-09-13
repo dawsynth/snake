@@ -37,31 +37,11 @@ void gameInit(Game *game)
 }
 
 
-void gameTerm(Game *game)
+void gameTerm(Game **game)
 {
-    SDL_DestroyRenderer(game->renderer);
-	SDL_DestroyWindow(game->window);
+    SDL_DestroyRenderer((*game)->renderer);
+	SDL_DestroyWindow((*game)->window);
 	SDL_Quit();    
-}
-
-SDL_Texture *loadTexture(Game *game, const char *file)
-{
-    // Load image into memory using SDL_image
-    SDL_Surface* surface = IMG_Load(file);
-    if (!surface)
-    {
-        printf("Error Creating Surface: %s\n", SDL_GetError());
-        gameTerm(game);
-    }
-
-    // Load Image into Graphics Hardware
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(game->renderer, surface);
-    SDL_FreeSurface(surface);
-    if (!texture)
-    {
-        printf("Error Creating Texture: %s\n", SDL_GetError());
-        gameTerm(game);
-    }
-    return texture;
+    free(*game);
 }
 

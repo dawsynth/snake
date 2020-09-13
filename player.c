@@ -1,20 +1,11 @@
 #include "player.h"
 
-void playerInit(Game *game, PlayerNode *playerHead, GameData *gameData, int hx, int hy)
+void playerInit(Game *game, struct node **playerHead, GameData *gameData, int hx, int hy)
 {
-    PlayerNode *tmp = playerHead;
-    tmp = tmp->prev;
-    while (tmp != NULL)
-    {
-        if (tmp->next != NULL) free(tmp->next);
-        tmp = tmp->prev;
-    }
-    playerHead->bodyPart.x = hx;
-    playerHead->bodyPart.y = hy;
-    playerHead->bodyPart.w = TILE_WIDTH;
-    playerHead->bodyPart.h = TILE_HEIGHT;
-    
-    gameData->direction = 0;
+    if ((*playerHead)->next != NULL) nodesFree(playerHead, 1);
+    (*playerHead)->bodyPart.x = hx;
+    (*playerHead)->bodyPart.y = hy;
+    gameData->direction = NOT_MOVING;
     gameData->score = 0;
     gameData->limit = 100;
     gameData->level = 0;
@@ -29,90 +20,113 @@ void appleInit(Game *game, Apple *apple)
     return;
 }
 
-
-void renderPlayer(Game *game, PlayerNode *playerHead, GameData *gameData)
+void playerMove(Game *game, struct node **playerHead, GameData *gameData)
 {
-    int sx, sy;
-    PlayerNode *tmp = playerHead;
-    if((gameData->headMoved + gameData->limit) < game->time)
+    struct node *tmp = NULL;
+    int sx = (*playerHead)->bodyPart.x;
+    int sy = (*playerHead)->bodyPart.y;
+    switch (gameData->direction)
     {
-        switch(gameData->direction)
+        case NOT_MOVING:
+            break;
+        case UP:
+            (*playerHead)->bodyPart.y -= (SPEED * TILE_HEIGHT);
+            break;
+        case DOWN:
+            (*playerHead)->bodyPart.y += (SPEED * TILE_HEIGHT);
+            break;
+        case RIGHT:
+            (*playerHead)->bodyPart.x += (SPEED * TILE_WIDTH);
+            break;
+        case LEFT:
+            (*playerHead)->bodyPart.x -= (SPEED * TILE_WIDTH);
+            break;
+    }
+    if ((*playerHead)->next != NULL)
+    {
+        for (tmp = (*playerHead)->next; ; tmp = tmp->next)
         {
-            case 1: // Down
-                playerHead->bodyPart.y += SPEED * TILE_HEIGHT;
-                break;
-            case 2: // Up
-                playerHead->bodyPart.y -= SPEED * TILE_HEIGHT;
-                break;
-            case 3: // Right
-                playerHead->bodyPart.x += SPEED * TILE_WIDTH;
-                break;
-            case 4: // Left
-                playerHead->bodyPart.x -= SPEED * TILE_WIDTH;
-                break;
-            case 0:
-            default:
-                break;
-        }
-        gameData->headMoved = game->time;
-        sx = playerHead->bodyPart.x;
-        sy = playerHead->bodyPart.y;
-        tmp = playerHead->next;
-        SDL_SetRenderDrawColor(game->renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderFillRect(game->renderer, &playerHead->bodyPart);
-        if (((playerHead->bodyPart.y == game->h) || (playerHead->bodyPart.y < 0)) && (gameData->direction != 0))
-        {
-            playerInit(game, playerHead, gameData, 0, 0);
-        }
-        if (((playerHead->bodyPart.x == game->w) || (playerHead->bodyPart.x < 0)) && (gameData->direction != 0))
-        {
-            playerInit(game, playerHead, gameData, 0, 0);
-        }
-        while (tmp != playerHead)
-        {
-            sx = sx + tmp->bodyPart.x;
-            tmp->bodyPart.x = sx - tmp->bodyPart.x;
-            sx = sx - tmp->bodyPart.x;
-            sy = sy + tmp->bodyPart.y;
-            tmp->bodyPart.y = sy - tmp->bodyPart.y;
-            sy = sy - tmp->bodyPart.y;
-            if( (tmp != playerHead) && ((playerHead->bodyPart.x == tmp->bodyPart.x) && (playerHead->bodyPart.y == tmp->bodyPart.y)))
-            {
-                playerInit(game, playerHead, gameData, 0, 0); break;
-            }
-            SDL_RenderFillRect(game->renderer, &tmp->bodyPart);
-            tmp = tmp->next;
+            tmp->bodyPart.x = tmp->bodyPart.x + sx;
+            sx = tmp->bodyPart.x - sx;
+            tmp->bodyPart.x = tmp->bodyPart.x - sx;
+            tmp->bodyPart.y = tmp->bodyPart.y + sy;
+            sy = tmp->bodyPart.y - sy;
+            tmp->bodyPart.y = tmp->bodyPart.y - sy;
+            if (tmp->next == *playerHead) break;
         }
     }
-    SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    tmp = NULL;
+    free(tmp);
     return;
 }
 
-void growPlayer(Game *game, PlayerNode *playerHead, GameData *gameData)
+void playerCollide(Game *game, struct node **playerHead, GameData *gameData)
 {
-    PlayerNode *tmp = playerHead;
-    PlayerNode *newBodyPart = malloc(sizeof(PlayerNode));
-    while (tmp->next != playerHead)
+    struct node *tmp = NULL;
+    if (gameData->direction != NOT_MOVING)
     {
-        tmp = tmp->next;
+        if (((*playerHead)->bodyPart.x == 0 && gameData->direction == LEFT) || ((*playerHead)->bodyPart.x == (game->w - TILE_WIDTH) && gameData->direction == RIGHT))
+        {
+            playerInit(game, playerHead, gameData, 0, 0);
+        }
+        if (((*playerHead)->bodyPart.y == 0 && gameData->direction == UP) || ((*playerHead)->bodyPart.y == (game->h - TILE_HEIGHT) && gameData->direction == DOWN))
+        {
+            playerInit(game, playerHead, gameData, 0, 0);
+        }
+        for (tmp = (*playerHead)->next; tmp != NULL; tmp = tmp->next)
+        {
+            if (tmp->bodyPart.x == (*playerHead)->bodyPart.x && tmp->bodyPart.y == (*playerHead)->bodyPart.y)
+            {
+                playerInit(game, playerHead, gameData, 0, 0);
+            }
+            if (tmp->next == NULL || tmp->next == *playerHead) break;
+            continue;
+        }
     }
-    tmp->next = newBodyPart;
-    newBodyPart->prev = tmp;
-    newBodyPart->next = playerHead;
-    newBodyPart->bodyPart = tmp->bodyPart;
+    tmp = NULL;
+    free(tmp);
+    return;
+}
+
+void playerRender(Game *game, struct node *playerHead)
+{
+    struct node *tmp = NULL;
+    SDL_SetRenderDrawColor(game->renderer, 0, 255, 0, SDL_ALPHA_OPAQUE);
+    for (tmp = playerHead; ; tmp = tmp->next)
+    {
+        SDL_RenderFillRect(game->renderer, &tmp->bodyPart);
+        if (tmp->next == NULL || tmp->next == playerHead) break;
+        continue;
+    }
+    SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    tmp = NULL;
+    free(tmp);
+    return;
+}
+
+void playerGrow(Game *game, struct node *playerHead, GameData *gameData)
+{
+    if (playerHead->prev != NULL) 
+    {
+        nodeInsertEnd(&playerHead, nodeCreate(&(SDL_Rect) {.x = playerHead->prev->bodyPart.x, .y = playerHead->prev->bodyPart.y, .w = TILE_WIDTH, .h = TILE_HEIGHT}));
+    }
+    else 
+    {
+        nodeInsertEnd(&playerHead, nodeCreate(&(SDL_Rect) {.x = playerHead->bodyPart.x, .y = playerHead->bodyPart.y, .w = TILE_WIDTH, .h = TILE_HEIGHT}));
+    }
     if((gameData->score % (((game->w / TILE_WIDTH) * (game->h / TILE_HEIGHT)) / 100)) == 0) gameData->limit -= 1, gameData->level += 1;
     return;
 }
 
-void renderApple(Game *game, Apple *apple, PlayerNode *playerHead, GameData *gameData)
+void appleRender(Game *game, Apple *apple, struct node *playerHead, GameData *gameData)
 {
     SDL_Rect appleDestRec;
-    if(apple->x == playerHead->bodyPart.x && apple->y == playerHead->bodyPart.y)
+    if(apple->x * TILE_WIDTH == playerHead->bodyPart.x && apple->y * TILE_HEIGHT == playerHead->bodyPart.y)
     {
         gameData->score += 1;
-        growPlayer(game, playerHead, gameData);
-        apple->x = (rand() % (game->w));
-        apple->y = (rand() % (game->h));
+        playerGrow(game, playerHead, gameData);
+        apple->x = (rand() % (game->w / TILE_WIDTH));
+        apple->y = (rand() % (game->h / TILE_HEIGHT));
     }
     appleDestRec.w = TILE_WIDTH;
     appleDestRec.h = TILE_HEIGHT;
@@ -124,7 +138,7 @@ void renderApple(Game *game, Apple *apple, PlayerNode *playerHead, GameData *gam
     return;
 }
 
-void gameResize(Game *game, PlayerNode *playerHead, GameData *gameData, Apple *apple, int w, int h)
+void gameResize(Game *game, struct node **playerHead, GameData *gameData, Apple *apple, int w, int h)
 {
     SDL_SetWindowSize(game->window, w, h);
     game->w = w, game->h = h;

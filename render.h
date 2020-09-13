@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_timer.h>
 
 
@@ -25,6 +24,5 @@ typedef struct {
 
 
 void gameInit(Game *game);
-void gameTerm(Game *game);
-SDL_Texture *loadTexture(Game *game, const char *file);
+void gameTerm(Game **game);
 #endif

@@ -4,13 +4,13 @@
 CC := gcc
 
 # set the compiler flags
-CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2_image -lm
+CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2 -lm
 
 # add header files here
-HDRS := render.h player.h
+HDRS := render.h player.h linkedlist.h
 
 # add source files here
-SRCS := main.c render.c player.c
+SRCS := main.c render.c player.c linkedlist.c
 
 # generate names of object files
 OBJS := $(SRCS:.c=.o)
