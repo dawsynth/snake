@@ -28,6 +28,10 @@ $(EXEC): $(OBJS) $(HDRS) Makefile
 # recipe for building object files
 #$(OBJS): $(@:.o=.c) $(HDRS) Makefile
 #	$(CC) -o $@ $(@:.o=.c) -c $(CFLAGS)
+install:
+	mkdir -p ${DESTDIR}${PREFIX}/bin
+	cp -f snake ${DESTDIR}${PREFIX}/bin
+	chmod 755 ${DESTDIR}${PREFIX}/bin/snake
 
 # recipe to clean the workspace
 clean:
