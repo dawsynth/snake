@@ -2,18 +2,23 @@
 #define LINKED_LIST_H_INCLUDED
 
 #include <stdlib.h>
-#include <SDL2/SDL.h>
 
-struct node{
-    SDL_Rect bodyPart;
-    struct node *next;
-    struct node *prev;
-};
+typedef struct _Node {
+    void* data;
+    Node* next;
+} Node;
 
-void nodeInsertEnd(struct node **head, struct node *toInsert);
-void nodeInsertHead(struct node **head, struct node *toInsert);
-struct node *nodeCreate(SDL_Rect *bodyPart);
-void nodesFree(struct node **head, int leaveHead);
+typedef struct _LinkedList {
+    Node* head;
+    Node* tail;
+    int size;
+} LinkedList;
+
+Node* create_node(void* data);
+LinkedList* create_l_list(Node* head, Node* tail);
+int l_list_insert_end(LinkedList* list, Node* to_insert);
+int l_list_insert_head(LinkedList* list, Node* to_insert);
+void destroy_l_list(LinkedList* list);
 
 #endif
 

@@ -1,61 +1,80 @@
 #include "linkedlist.h"
 
-void nodeInsertEnd(struct node **head, struct node *toInsert)
-{
-    toInsert->next = *head;
-    if ((*head)->prev != NULL)
-    {
-        toInsert->prev = (*head)->prev;
-        (*head)->prev->next = toInsert;
-    }
-    else 
-    {
-        toInsert->prev = *head;
-        (*head)->next = toInsert;
-    }
-    (*head)->prev = toInsert;
-    return;
-}
-void nodeInsertHead(struct node **head, struct node *toInsert)
-{
-    toInsert->next = *head;
-    if ((*head)->prev != NULL)
-    {
-        toInsert->prev = (*head)->prev;
-        (*head)->prev->next = toInsert;
-    }
-    else toInsert->prev = *head;
-    (*head)->prev = toInsert;
-    *head = toInsert;
-    return;
-}
-struct node *nodeCreate(SDL_Rect *bodyPart)
-{
-    struct node *newNode = malloc(sizeof(struct node));
-    newNode->bodyPart = *bodyPart;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-    return newNode;
+Node* create_node(void* data) {
+    Node* result = malloc(sizeof(Node));
+    result->data = data;
+    result->next = NULL;
+    return result;
 }
 
-void nodesFree(struct node **head, int leaveHead)
-{
-    struct node *tmp = NULL;
-    if ((*head)->prev != NULL)
-    {
-        struct node *tail = (*head)->prev;
-        for (tmp = tail; tail != *head; tmp = tail)
-        {
-            tail = tmp->prev;
-            free(tmp);
+LinkedList* create_l_list(Node* head, Node* tail) {
+    LinkedList* result = malloc(sizeof(LinkedList));
+
+    result->head = head;
+    result->tail = tail;
+    result->size = 0;
+
+    if (result->head != NULL || result->tail != NULL) {
+        if (result->head != NULL && result->tail != NULL) {
+            result->size += 2;
+        } else if (result->tail != NULL) {
+            result->size += 1;
+            result->head = result->tail;
+            result->tail = NULL;
+        } else if (result->head != NULL) {
+            result->size += 1;
         }
+        result->head->next = result->tail;
     }
-    if (!leaveHead) free(*head);
-    else if (leaveHead) 
-    {
-        (*head)->next = NULL;
-        (*head)->prev = NULL;
+
+    if (result->head == result->tail && result->head != NULL) {
+        result->head->next = NULL;
+        result->tail = NULL;
+        result->size = 1;
     }
-    return; 
+
+    return result;
+}
+
+int l_list_insert_end(LinkedList* list, Node* to_insert) {
+    int result = -1;
+    if (to_insert != NULL) {
+        if (list->head != NULL) {
+            if (list->tail != NULL) {
+                list->tail->next = to_insert;
+            } else {
+                list->head->next = to_insert;
+            }
+            list->tail = to_insert;
+            to_insert->next = NULL;
+        } else {
+            list->head = to_insert;
+        }
+        list->size += 1;
+        result = 0;
+    }
+    return result;
+}
+
+int l_list_insert_head(LinkedList* list, Node* to_insert) {
+    int result = -1;
+    if (to_insert != NULL) {
+        to_insert = list->head;
+        list->head = to_insert;
+        list->size += 1;
+        result = 0;
+    }
+    return result;
+}
+
+void destroy_l_list(LinkedList* list) {
+    Node* to_free = NULL;
+    for (Node* tmp = list->head; tmp != NULL; tmp = tmp->next) {
+        free(to_free);
+        free(tmp->data);
+        to_free = tmp;
+    }
+    free(to_free);
+    free(list);
 }
 
