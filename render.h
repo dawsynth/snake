@@ -6,23 +6,21 @@
 #include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
+#include "player.h"
 
+#define TILE_SIZE 10
+#define DEFAULT_WINDOW_SIZE (TILE_SIZE * DEFAULT_BOARD)
 
-#define DEFAULT_WINDOW_WIDTH (400)
-#define DEFAULT_WINDOW_HEIGHT (400)
-#define TILE_WIDTH 10
-#define TILE_HEIGHT 10
-#define SCALAR 2
-
-
-typedef struct {
+typedef struct _View {
     SDL_Window* window;
     SDL_Renderer* renderer;
     unsigned long int time;
     int w, h;
-} Game;
+} View;
 
+void init_view(View* view);
+void term_view(View* view);
 
-void gameInit(Game *game);
-void gameTerm(Game **game);
+void draw_game(SDL_Renderer* renderer, Game* game);
+
 #endif

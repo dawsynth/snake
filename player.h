@@ -1,31 +1,47 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-#include <SDL2/SDL.h>
-#include "render.h"
 #include "linkedlist.h"
 
 #define SPEED 1
+#define DEFAULT_BOARD 8
 
-enum DIRECTION {NOT_MOVING, UP, DOWN, RIGHT, LEFT};
+typedef enum _TILE {
+    EMPTY, 
+    SNAKE, 
+    APPLE
+} TILE;
 
-typedef struct {
-    int direction, score, limit, level;
-    unsigned long int headMoved;
-} GameData;
+typedef struct _Game {
+    unsigned int score, level;
+    TILE** board;
+    unsigned int board_size;
+} Game;
 
-typedef struct {
+typedef enum _DIRECTION {
+    NOT_MOVING,
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT
+} DIRECTION;
+
+typedef struct _Position {
     int x, y;
-} Apple;
+} Position;
 
-void playerInit(Game *game, struct node **playerHead, GameData *gameData, int hx, int hy);
-void playerMove(Game *game, struct node **playerHead, GameData *gameData);
-void playerCollide(Game *game, struct node **playerHead, GameData *gameData);
-void playerRender(Game *game, struct node *playerHead);
-void playerGrow(Game *game, struct node *playerHead, GameData *gameData);
+typedef struct _Snake {
+    LinkedList* parts;
+    DIRECTION direction;
+} Snake;
 
-void appleInit(Game *game, Apple *apple);
-void appleRender(Game *game, Apple *apple, struct node *playerHead, GameData *gameData);
+Game* game_init(unsigned int size);
+void game_destroy(Game* game);
 
-void gameResize(Game *game, struct node **playerHead, GameData *gameData, Apple *apple, int w, int h);
+Snake* snake_init(Game* game);
+int snake_reset(Game* game, Snake* snake);
+void snake_destroy(Snake* snake);
+
+int game_update(Game* game, Snake* snake);
+
 #endif

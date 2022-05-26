@@ -78,3 +78,14 @@ void destroy_l_list(LinkedList* list) {
     free(list);
 }
 
+void empty_l_list(LinkedList* list) {
+    Node* to_free = NULL;
+    for (Node* tmp = list->head; tmp != NULL; tmp = tmp->next) {
+        free(to_free);
+        free(tmp->data);
+        to_free = tmp;
+    }
+    free(to_free);
+    list->size = 0;
+}
+

@@ -18,6 +18,7 @@ Node* create_node(void* data);
 LinkedList* create_l_list(Node* head, Node* tail);
 int l_list_insert_end(LinkedList* list, Node* to_insert);
 int l_list_insert_head(LinkedList* list, Node* to_insert);
+void empty_l_list(LinkedList* list);
 void destroy_l_list(LinkedList* list);
 
 #endif
