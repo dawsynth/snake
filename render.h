@@ -8,7 +8,7 @@
 #include <SDL2/SDL_timer.h>
 #include "player.h"
 
-#define TILE_SIZE 10
+#define TILE_SIZE 20
 #define DEFAULT_WINDOW_SIZE (TILE_SIZE * DEFAULT_BOARD)
 
 typedef struct _View {

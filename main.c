@@ -8,6 +8,8 @@
 
 int main(void)
 {
+    time_t t;
+    srand((unsigned) time(&t));
     char title[100];
     Uint32 last_moved = 0;
     View* view = malloc(sizeof(View));
@@ -64,7 +66,7 @@ int main(void)
         }
         // Draw Image to Window
         view->time = SDL_GetTicks();
-        if (last_moved + 1000 <= view->time)
+        if (last_moved + 100 <= view->time)
         {
             game_update(game, snake);
             last_moved = view->time;

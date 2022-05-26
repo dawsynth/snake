@@ -5,7 +5,7 @@ static void apple_gen(Game* game) {
     do {
         x = rand() % game->board_size;
         y = rand() % game->board_size;
-    } while (game->board[x][y] != SNAKE);
+    } while (game->board[x][y] == SNAKE);
     game->board[x][y] = APPLE;
 }
 
@@ -39,7 +39,7 @@ Game* game_init(unsigned int size) {
 
     do {
         apple_gen(result);
-    } while (result->board[0][0] != APPLE);
+    } while (result->board[0][0] == APPLE);
 
     return result;
 }
@@ -167,13 +167,6 @@ static void snake_slither(Game* game, Snake* snake) {
         tmp = NULL;
     }
 
-    for (tmp = snake->parts->head; tmp != NULL; tmp = tmp->next) {
-        int x = ((Position *)(tmp->data))->x;
-        int y = ((Position *)(tmp->data))->y;
-        if (x < game->board_size && x >= 0 && y < game->board_size && y >= 0) {
-            game->board[y][x] = SNAKE;
-        }
-    }
 }
 
 int game_update(Game* game, Snake* snake) {
@@ -199,6 +192,18 @@ int game_update(Game* game, Snake* snake) {
             return -1;
         }
         game->score += 1;
+    }
+    for (int i = 0; i < game->board_size; i++) {
+        for (int j = 0; j < game->board_size; j++) {
+            game->board[i][j] = (game->board[i][j] == APPLE) ? APPLE : EMPTY;
+        }
+    }
+    for (Node* tmp = snake->parts->head; tmp != NULL; tmp = tmp->next) {
+        int x = ((Position *)(tmp->data))->x;
+        int y = ((Position *)(tmp->data))->y;
+        if (x < game->board_size && x >= 0 && y < game->board_size && y >= 0) {
+            game->board[y][x] = SNAKE;
+        }
     }
     return 0;
 }

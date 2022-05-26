@@ -4,7 +4,7 @@
 #include "linkedlist.h"
 
 #define SPEED 1
-#define DEFAULT_BOARD 8
+#define DEFAULT_BOARD 25
 
 typedef enum _TILE {
     EMPTY, 
