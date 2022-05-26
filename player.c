@@ -116,8 +116,10 @@ void snake_destroy(Snake* snake) {
 
 static void snake_slither(Game* game, Snake* snake) {
     Node* tmp = NULL;
-    int nx, ox = ((Position *)(snake->parts->head->data))->x;
-    int ny, oy = ((Position *)(snake->parts->head->data))->y;
+    int nx = ((Position *)(snake->parts->head->data))->x;
+    int ny = ((Position *)(snake->parts->head->data))->y;
+    int ox = ((Position *)(snake->parts->head->data))->x;
+    int oy = ((Position *)(snake->parts->head->data))->y;
     switch (snake->direction) {
         case NOT_MOVING:
             break;
@@ -126,15 +128,12 @@ static void snake_slither(Game* game, Snake* snake) {
             break;
         case DOWN:
             ny += SPEED;
-            ((Position *)(snake->parts->head->data))->y += SPEED;
             break;
         case RIGHT:
             nx += SPEED;
-            ((Position *)(snake->parts->head->data))->x += SPEED;
             break;
         case LEFT:
             nx -= SPEED;
-            ((Position *)(snake->parts->head->data))->x -= SPEED;
             break;
     }
 
@@ -201,5 +200,6 @@ int game_update(Game* game, Snake* snake) {
         }
         game->score += 1;
     }
+    return 0;
 }
 
