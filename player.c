@@ -105,6 +105,8 @@ int snake_reset(Game* game, Snake* snake) {
         }
     }
 
+    apple_gen(game);
+
     return 0;
 }
 
@@ -137,17 +139,17 @@ static void snake_slither(Game* game, Snake* snake) {
             break;
     }
 
-    if (nx > game->board_size || nx < 0) {
+    if (nx >= game->board_size || nx < 0) {
         snake_reset(game, snake);
         return;
     }
 
-    if (ny > game->board_size || ny < 0) {
+    if (ny >= game->board_size || ny < 0) {
         snake_reset(game, snake);
         return;
     }
 
-    if (game->board[ny][nx] == SNAKE) {
+    if (game->board[ny][nx] == SNAKE && snake->direction != NOT_MOVING) {
         snake_reset(game, snake);
         return;
     }
@@ -192,6 +194,7 @@ int game_update(Game* game, Snake* snake) {
             return -1;
         }
         game->score += 1;
+        apple_gen(game);
     }
     for (int i = 0; i < game->board_size; i++) {
         for (int j = 0; j < game->board_size; j++) {

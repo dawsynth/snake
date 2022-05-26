@@ -59,7 +59,7 @@ int l_list_insert_end(LinkedList* list, Node* to_insert) {
 int l_list_insert_head(LinkedList* list, Node* to_insert) {
     int result = -1;
     if (to_insert != NULL) {
-        to_insert = list->head;
+        to_insert->next = list->head;
         list->head = to_insert;
         list->size += 1;
         result = 0;
@@ -68,24 +68,26 @@ int l_list_insert_head(LinkedList* list, Node* to_insert) {
 }
 
 void destroy_l_list(LinkedList* list) {
-    Node* to_free = NULL;
-    for (Node* tmp = list->head; tmp != NULL; tmp = tmp->next) {
-        free(to_free);
+    Node* tmp;
+    while (list->head != NULL) {
+        tmp = list->head;
+        list->head = list->head->next;
         free(tmp->data);
-        to_free = tmp;
+        free(tmp);
     }
-    free(to_free);
     free(list);
 }
 
 void empty_l_list(LinkedList* list) {
-    Node* to_free = NULL;
-    for (Node* tmp = list->head; tmp != NULL; tmp = tmp->next) {
-        free(to_free);
+    Node* tmp;
+    while (list->head != NULL) {
+        tmp = list->head;
+        list->head = list->head->next;
         free(tmp->data);
-        to_free = tmp;
+        free(tmp);
     }
-    free(to_free);
+    list->head = NULL;
+    list->tail = NULL;
     list->size = 0;
 }
 
